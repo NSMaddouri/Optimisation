@@ -72,7 +72,7 @@ def armijo(max_iters=200, A=None, b=None):
         return fun_values_armijo
 
     results = grad_desc_armijo(alpha=1)
-    plt.plot(range(200), results, label='Armijo')
+    plt.plot(range(10), results[:10], label='Armijo')
     plt.legend(loc="best")
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
@@ -104,7 +104,7 @@ def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None):
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
     plt.show()
-    print("\nfinal step size :", t, " \nNumber of steps: ", count)
+    print("\nfinal step size :", t, " \nnombre d'iteration Armijo: ", count)
     return fun_value
 
 
