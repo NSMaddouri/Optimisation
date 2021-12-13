@@ -11,7 +11,6 @@ def armijo(max_iters=200, A=None, b=None):
                                            [0, -1, 24, -1, 0],
                                            [0, 0, -1, 48, -1],
                                            [0, 0, 0, -1, 96]])
-
     n = len(b)
 
     def f(x):
@@ -68,7 +67,8 @@ def armijo(max_iters=200, A=None, b=None):
                 curr_iter = curr_iter
             else:
                 curr_iter += 1
-        print('nombre d\'iteration Armijo ', curr_iter)
+        print('nombre d\'iteration Armijo rn ', curr_iter)
+        print('solution Armijo rn ', cur_value)
         return fun_values_armijo
 
     results = grad_desc_armijo(alpha=1)
@@ -102,14 +102,14 @@ def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None, alpha=0.3, be
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
     plt.show()
-    print("\nfinal step size :", t, " \nnombre d'iteration Armijo: ", count)
+    print("\nfinal step size armijo r2 :", t, " \nnombre d'iteration Armijo r2: ", count)
     return fun_value
 
 
 c1 = time()
 print("armijo r2 :", armijo_r2())
-print('temps de execution Armijo r2 : ', time() - c1)
+print('temps d\'execution Armijo r2 : ', time() - c1)
 
 c = time()
 print("armijo rn :", armijo())
-print('temps de execution Armijo : ', time() - c)
+print('temps de execution Armijo rn: ', time() - c)
