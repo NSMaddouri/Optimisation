@@ -1,35 +1,30 @@
+from time import time
+
 import numpy as np
-from scipy.stats import ortho_group
 from matplotlib import pyplot as plt
 
-def armijo(n, seed=135, max_iters=200):
+
+def armijo(max_iters=200, A=None, b=None):
+    b = b if b is not None else np.matrix([[1], [2], [3], [4], [5]])
+    A = A if A is not None else np.matrix([[3, -1, 0, 0, 0],
+                                           [-1, 12, -1, 0, 0],
+                                           [0, -1, 24, -1, 0],
+                                           [0, 0, -1, 48, -1],
+                                           [0, 0, 0, -1, 96]])
+
+    n = len(b)
 
     def f(x):
         """
         calculate f(x) with input x
         """
-        return np.asscalar(1 / 2 * x.T * A * x + b.T * x)
+        return (1 / 2 * np.dot((np.dot(x.T, A)), x) - np.dot(b.T, x)).item()
 
     def df(x):
-
         """
         calculate f'(x) with input x
         """
         return A * x + b
-
-    def grad_desc_const(alpha):
-        """
-        gradient descent with constant step size alpha
-        """
-        x = np.matrix(np.zeros((n, 1)))
-        fun_values_const = [f(x)]
-        for i in range(max_iters-1):
-            # calculate derivative
-            d = df(x)
-            # update x
-            x -= alpha * d
-            # get new function value
-            fun_values_const.append(f(x))
 
     def grad_desc_exact():
         """
@@ -37,11 +32,11 @@ def armijo(n, seed=135, max_iters=200):
         """
         x = np.matrix(np.zeros((n, 1)))
         fun_values_exact = [f(x)]
-        for i in range(max_iters-1):
+        for i in range(max_iters - 1):
             # calculate derivative
             d = df(x)
             # calculate step size
-            alpha = np.asscalar(d.T * d / (d.T * A * d))
+            alpha = (d.T * d / (d.T * A * d)).item()
             # update x
             x -= alpha * d
             # get new function value
@@ -55,28 +50,27 @@ def armijo(n, seed=135, max_iters=200):
         fun_values_exact = grad_desc_exact()
         x = np.matrix(np.zeros((n, 1)))
         fun_values_armijo = [f(x)]
-        for i in range(max_iters-1):
+        curr_iter = 1
+        for i in range(max_iters - 1):
             # calculate derivative
             d = df(x)
             # backtracking line search
             cur_alpha = alpha
-            cur_value = f(x - cur_alpha * d)
-            while cur_value <= fun_values_exact[-1] + sigma * cur_alpha * d.T * d:
+            cur_value = f(x + cur_alpha * d)
+            while cur_value > f(x) + sigma * cur_alpha * d.T * d:
                 cur_alpha *= beta
-                cur_value = f(x - cur_alpha * d)
+                cur_value = f(x + cur_alpha * d)
             # update x
             x -= cur_alpha * d
             # get new function value
             fun_values_armijo.append(cur_value)
+            if cur_value == fun_values_armijo[-1]:
+                curr_iter = curr_iter
+            else:
+                curr_iter += 1
+        print('nombre d\'iteration Armijo ', curr_iter)
         return fun_values_armijo
 
-    np.random.seed(seed)
-    n = n
-    b = np.matrix(2 * np.random.rand(n, 1) - 1)
-    U = np.matrix(ortho_group.rvs(dim=n))
-    D = np.matrix(np.diagflat(np.random.rand(n)))
-    A = U.T * D * U
-    max_iters = max_iters
     results = grad_desc_armijo(alpha=1)
     plt.plot(range(200), results, label='Armijo')
     plt.legend(loc="best")
@@ -86,18 +80,38 @@ def armijo(n, seed=135, max_iters=200):
     return results
 
 
-# create my random function
-print(armijo(100))
-# my_fun = quad_rand(100)
-# run graident descent
-# my_fun.grad_desc_const(alpha=0.3)
-# my_fun.grad_desc_exact()
-# my_fun.grad_desc_armijo(alpha=1)
-# # plot
-# plt.plot(range(200), my_fun.fun_values_const, label='Constant')
-# plt.plot(range(200), my_fun.fun_values_exact, label='Exact Min')
-# plt.plot(range(200), my_fun.fun_values_armijo, label='Armijo')
-# plt.legend(loc="best")
-# plt.xlabel("Iterations")
-# plt.ylabel("Function Value")
-# plt.show()
+def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None):
+    alpha = 0.3
+    beta = 0.8
+    f = f if f is not None else lambda x: ((x[0] - 1) ** 2 + (x[1] - 4) ** 2)
+    dfx1 = dfx1 if dfx1 is not None else lambda x: (2 * x[0])
+    dfx2 = dfx2 if dfx2 is not None else lambda x: (2 * x[1])
+    x0 = x0 if x0 is not None else np.array([2, 3])
+
+    def backtrack(x0, dfx1, dfx2, t, alpha, beta, count):
+        fun_value = []
+        while (f(x0) - (f(x0 - t * np.array([dfx1(x0), dfx2(x0)])) + alpha * t * np.dot(np.array([dfx1(x0), dfx2(x0)]),
+                                                                                        np.array([dfx1(x0),
+                                                                                                  dfx2(x0)])))) < 0:
+            t *= beta
+            fun_value.append(t)
+            count += 1
+        return t, count, fun_value
+
+    t, count, fun_value = backtrack(x0, dfx1, dfx2, t, alpha, beta, count)
+    plt.plot(range(len(fun_value)), fun_value, label='Armijo r2')
+    plt.legend(loc="best")
+    plt.xlabel("Iterations")
+    plt.ylabel("Function Value")
+    plt.show()
+    print("\nfinal step size :", t, " \nNumber of steps: ", count)
+    return fun_value
+
+
+c1 = time()
+print("armijo r2 :", armijo_r2())
+print('temps de execution Armijo r2 : ', time() - c1)
+
+c = time()
+print("armijo rn :", armijo())
+print('temps de execution Armijo : ', time() - c)
