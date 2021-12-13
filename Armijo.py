@@ -72,7 +72,7 @@ def armijo(max_iters=200, A=None, b=None):
         return fun_values_armijo
 
     results = grad_desc_armijo(alpha=1)
-    plt.plot(range(10), results[:10], label='Armijo')
+    plt.plot(range(10), results[:10], label='Armijo rn')
     plt.legend(loc="best")
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
@@ -80,9 +80,7 @@ def armijo(max_iters=200, A=None, b=None):
     return results
 
 
-def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None):
-    alpha = 0.3
-    beta = 0.8
+def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None, alpha=0.3, beta=0.8):
     f = f if f is not None else lambda x: ((x[0] - 1) ** 2 + (x[1] - 4) ** 2)
     dfx1 = dfx1 if dfx1 is not None else lambda x: (2 * x[0])
     dfx2 = dfx2 if dfx2 is not None else lambda x: (2 * x[1])
