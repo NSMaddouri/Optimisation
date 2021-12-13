@@ -25,28 +25,10 @@ def armijo(max_iters=200, A=None, b=None):
         """
         return A * x + b
 
-    def grad_desc_exact():
-        """
-        gradient descent with exact line minimization
-        """
-        x = np.matrix(np.zeros((n, 1)))
-        fun_values_exact = [f(x)]
-        for i in range(max_iters - 1):
-            # calculate derivative
-            d = df(x)
-            # calculate step size
-            alpha = (d.T * d / (d.T * A * d)).item()
-            # update x
-            x -= alpha * d
-            # get new function value
-            fun_values_exact.append(f(x))
-            return fun_values_exact
-
     def grad_desc_armijo(alpha, beta=0.5, sigma=0.9):
         """
         gradient descent with Armijo step size rule
         """
-        fun_values_exact = grad_desc_exact()
         x = np.matrix(np.zeros((n, 1)))
         fun_values_armijo = [f(x)]
         curr_iter = 1
