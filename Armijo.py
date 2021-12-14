@@ -95,3 +95,20 @@ print('temps d\'execution Armijo r2 : ', time() - c1)
 c = time()
 print("armijo rn :", armijo())
 print('temps de execution Armijo rn: ', time() - c)
+
+def user_input():
+    Aa = int(input("Enter the number of rows for A (ex: 2):"))
+    Ab = int(input("Enter the number of columns for A(ex: 2):"))
+
+    print("Enter the entries in a single line for A (separated by space ex: 1 2 3 4): ")
+
+    entries = list(map(int, input().split()))
+    matrixA = np.matrix(entries).reshape(Aa, Ab)
+    print(type(matrixA))
+
+    b = int(input("Enter the number of rows for b (ex: 5):"))
+    bcolumns = 1
+    entries = list(map(int, input().split()))
+    matrixb = np.matrix(entries).reshape(b, bcolumns)
+    print(type(matrixb))
+    armijo(A=matrixA, b=matrixb)
