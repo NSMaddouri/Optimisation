@@ -2,7 +2,6 @@ from time import time
 
 import numpy as np
 from matplotlib import pyplot as plt
-from sympy import symbols
 
 
 def armijo(max_iters=200, A=None, b=None):
@@ -39,7 +38,7 @@ def armijo(max_iters=200, A=None, b=None):
             # backtracking line search
             cur_alpha = alpha
             cur_value = f(x + cur_alpha * d)
-            while f(x + cur_alpha * d) > f(x) + sigma * cur_alpha * d.T * d:
+            while cur_value > f(x) + sigma * cur_alpha * d.T * d:
                 cur_alpha *= beta
                 cur_value = f(x + cur_alpha * d)
             # update x
@@ -83,7 +82,7 @@ def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None, alpha=0.3, be
 
     t, count, fun_value = backtrack(x0, dfx1, dfx2, t, alpha, beta, count)
     plt.plot(range(len(fun_value)), fun_value, label='Armijo r2')
-    plt.legend(loc="best", )
+    plt.legend(loc="best")
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
     plt.show()
