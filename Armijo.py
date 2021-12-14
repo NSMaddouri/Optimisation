@@ -2,6 +2,7 @@ from time import time
 
 import numpy as np
 from matplotlib import pyplot as plt
+from sympy import symbols
 
 
 def armijo(max_iters=200, A=None, b=None):
@@ -38,7 +39,7 @@ def armijo(max_iters=200, A=None, b=None):
             # backtracking line search
             cur_alpha = alpha
             cur_value = f(x + cur_alpha * d)
-            while cur_value > f(x) + sigma * cur_alpha * d.T * d:
+            while f(x + cur_alpha * d) > f(x) + sigma * cur_alpha * d.T * d:
                 cur_alpha *= beta
                 cur_value = f(x + cur_alpha * d)
             # update x
@@ -63,10 +64,12 @@ def armijo(max_iters=200, A=None, b=None):
 
 
 def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None, alpha=0.3, beta=0.8):
-    f = f if f is not None else lambda x: ((x[0] - 1) ** 2 + (x[1] - 4) ** 2)
-    dfx1 = dfx1 if dfx1 is not None else lambda x: (2 * x[0])
-    dfx2 = dfx2 if dfx2 is not None else lambda x: (2 * x[1])
-    x0 = x0 if x0 is not None else np.array([2, 3])
+
+    # function de test rosenbrock
+    f = f if f is not None else lambda x: (1 - x[0]) ** 2 + 100 * (x[1] - x[0] * 2) ** 2
+    dfx1 = dfx1 if dfx1 is not None else lambda x: 2 * (x[0] - 1)
+    dfx2 = dfx2 if dfx2 is not None else lambda x: -400*x[0] + 200*x[1]
+    x0 = x0 if x0 is not None else np.array([3, 3])
 
     def backtrack(x0, dfx1, dfx2, t, alpha, beta, count):
         fun_value = []
@@ -80,7 +83,7 @@ def armijo_r2(f=None, dfx1=None, dfx2=None, t=1, count=1, x0=None, alpha=0.3, be
 
     t, count, fun_value = backtrack(x0, dfx1, dfx2, t, alpha, beta, count)
     plt.plot(range(len(fun_value)), fun_value, label='Armijo r2')
-    plt.legend(loc="best")
+    plt.legend(loc="best", )
     plt.xlabel("Iterations")
     plt.ylabel("Function Value")
     plt.show()
@@ -112,3 +115,5 @@ def user_input():
     matrixb = np.matrix(entries).reshape(b, bcolumns)
     print(type(matrixb))
     armijo(A=matrixA, b=matrixb)
+
+
